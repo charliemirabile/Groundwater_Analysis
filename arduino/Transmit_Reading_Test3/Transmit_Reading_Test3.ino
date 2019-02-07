@@ -32,9 +32,10 @@
 
 #define min_address 8                 //min possible EZO address
 #define max_address 119               //min possible EZO address
-#define number_of_EZO_sensors 10      //how many EZO sensors do we expect to read from, at most?
+#define number_of_EZO_sensors 3       //how many EZO sensors do we expect to read from, at most?
 #define frequency 1000                //how often will we read in data from the sensors, in ms?
 #define max_reading_length 10         //how long will the data read in from the sensor be at most?
+#define max_node_id_length 5          //how long will the node id be at most?
 #define RFM95_CS  8                   //for feather32u4
 #define RFM95_RST 4                   //for feather32u4
 #define RFM95_INT 7                   //for feather32u4
@@ -43,15 +44,17 @@
 // VARIABLE DECLARATIONS
 
 int     addresses
-        [number_of_EZO_sensors] =
-        {100, 101, 50, 51, 0};           //an int array containing the addresses of the EZO sensors, potentially 8-119
+[number_of_EZO_sensors] =
+{101, 100, 105};                      //an int array containing the addresses of the EZO sensors, potentially 8-119
+char    node_id
+[max_node_id_length]="10";
 char    message                       //a string which we will transmit to the base station's Feather device via radio;
-        [4 + max_reading_length];     //3 chars for the address, 1 char for a colon, and max_reading_length chars for the sensor's read-in data
+[max_node_id_length + 4 + max_reading_length];             //3 chars for the address, 1 char for a colon, and max_reading_length chars for the sensor's read-in data
 char    computerdata[20];             //a 20-byte char array containing the incoming data from the computer
 byte    received_from_computer = 0;   //how many characters have been received from the computer?
 byte    serial_event = 0;             //a flag to signal when data has been received from the pc/mac/other.
 byte    response_code = 0;            //used to hold the I2C response code.
-char    RTD_data[20];                 //a 20-byte char array containing the incoming data from the RTD circuit
+char    RTD_data[15];                 //a 15-byte char array containing the incoming data from the RTD circuit
 byte    in_char = 0;                  //a 1-byte buffer storing inbound bytes from the RTD Circuit
 byte    i = 0;                        //a counter used for RTD_data array
 int     time_ = 600;                  //used to change the delay needed depending on the command sent to the EZO Class RTD Circuit
@@ -73,16 +76,16 @@ RH_RF95 rf95(RFM95_CS, RFM95_INT);
 // SETUP FUNCTION
 
 void setup() {
-  
+
   //Start (potential) serial communication with computer
   Serial.begin(9600);
 
-//  while (!Serial) {
-//
-//    //Wait for serial connection to be established
-//    delay(1);
-//
-//  }
+  //  while (!Serial) {
+  //
+  //    //Wait for serial connection to be established
+  //    delay(1);
+  //
+  //  }
 
   //Start I2C communication
   Wire.begin();
@@ -135,13 +138,13 @@ void setup() {
 
 void loop() {
 
-//  if ( Serial.available() ) {
-//
-//    received_from_computer = Serial.readBytesUntil( 13, computerdata, 20 );
-//    computerdata[received_from_computer] = 0;
-//    serial_event = true;
-//
-//  }
+  //  if ( Serial.available() ) {
+  //
+  //    received_from_computer = Serial.readBytesUntil( 13, computerdata, 20 );
+  //    computerdata[received_from_computer] = 0;
+  //    serial_event = true;
+  //
+  //  }
 
   // CONTINUOUS READINGS
 
@@ -157,118 +160,131 @@ void loop() {
 
 void get_reading( ) {
 
+  // STARTING I2C TRANSMISSION
+
   for ( int j = 0 ; j < sizeof( addresses ) / sizeof( int ) ; j++ ) {
 
-    if ( addresses[j] >= min_address && addresses[j] <= max_address ) {
-    
-    //call the circuit by its ID number.
-    Wire.beginTransmission( addresses[j] ) ;
+    if ( (addresses[j] >= min_address && addresses[j] <= max_address) ) {
 
-    //transmit the command that was sent through the serial port.
-    Wire.write( computerdata ) ;
+      //call the circuit by its ID number.
+      Wire.beginTransmission( addresses[j] ) ;
 
-    //end the I2C data transmission.
-    Wire.endTransmission();
+      //transmit the command that was sent through the serial port.
+      Wire.write( computerdata ) ;
 
-    //if  the command that has been sent is the sleep command, we do nothing.
-    //Issuing a sleep command and then requesting data will wake the RTD circuit.
+      //end the I2C data transmission.
+      Wire.endTransmission();
 
-    //if the command that has been sent is NOT the sleep command
-    if ( strcmp( computerdata, "sleep" ) != 0 ) {
+      //if  the command that has been sent is the sleep command, we do nothing.
+      //Issuing a sleep command and then requesting data will wake the RTD circuit.
 
-      //wait the correct amount of time for the circuit to complete its instruction
-      delay( frequency );
+      //if the command that has been sent is NOT the sleep command
+      if ( strcmp( computerdata, "sleep" ) != 0 ) {
 
-      // and request data by calling the circuit and requesting 20 bytes (this may be more than we need)
-      Wire.requestFrom( addresses[j], 20, 1 ) ;
+        //wait the correct amount of time for the circuit to complete its instruction
+        delay( frequency );
 
-      // RESPONSE CODE
+        // and request data by calling the circuit and requesting 20 bytes (this may be more than we need)
+        Wire.requestFrom( addresses[j], 20, 1 ) ;
 
-      //the first byte is the response code, we read this separately.
-      response_code = Wire.read();
+        // RESPONSE CODE - DID THE COMMAND WORK?
 
-      switch ( response_code ) {
+        //the first byte is the response code, we read this separately.
+        response_code = Wire.read();
 
-        //decimal 1.
-        case 1:
+        switch ( response_code ) {
 
-          //the command was successful.
-          Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
-          Serial.println("Command status:            SUCESSFUL.");
+          //decimal 1.
+          case 1:
 
-          break;
+            //the command was successful.
+            Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
+            Serial.println("Command status:            SUCCESSFUL.");
 
-        //decimal 2.
-        case 2:
+            break;
 
-          //the command has failed.
-          Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
-          Serial.println("Command status:            FAILED.");
+          //decimal 2.
+          case 2:
 
-          break;
+            //the command has failed.
+            Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
+            Serial.println("Command status:            FAILED.");
 
-        //decimal 254.
-        case 254:
+            break;
 
-          //the command has not yet been finished calculating.
-          Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
-          Serial.println("Command status:            PENDING");
+          //decimal 254.
+          case 254:
 
-          break;
+            //the command has not yet been finished calculating.
+            Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
+            Serial.println("Command status:            PENDING");
 
-        //decimal 255.
-        case 255:
+            break;
 
-          //means there is no further data to send.
-          Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
-          Serial.println("Command status:            NO DATA");
+          //decimal 255.
+          case 255:
 
-          break;
+            //means there is no further data to send.
+            Serial.print("Command entered:           "); Serial.print(computerdata); Serial.print("\n");
+            Serial.println("Command status:            NO DATA");
 
-      }
-
-      // RECEIVING DATA FROM SENSOR
-
-      //are there bytes to receive?
-      while ( Wire.available() ) {
-
-        //receive a byte.
-        in_char = Wire.read();
-
-        //load this byte into our array.
-        RTD_data[i] = in_char;
-
-        //incur the counter for the array element.
-        i += 1;
-
-        //if we see that we have been sent a null command.
-        if ( in_char == 0 ) {
-
-          //reset the counter i to 0.
-          i = 0;
-
-          //end the I2C data transmission.
-          Wire.endTransmission();
-
-          //exit the while loop.
-          break;
+            break;
 
         }
 
+        // RECEIVING DATA FROM SENSOR
+
+        if ( response_code != 1 ) {
+
+          RTD_data[0] = '\0';
+
+        } else {
+
+
+          //are there bytes to receive?
+          while ( Wire.available()) {
+
+            //receive a byte.
+            in_char = Wire.read();
+
+            //load this byte into our array.
+            RTD_data[i] = in_char;
+
+            //incur the counter for the array element.
+            i += 1;
+
+            //if we see that we have been sent a null command.
+            if ( in_char == 0 ) {
+
+              //reset the counter i to 0.
+              i = 0;
+
+              //end the I2C data transmission.
+              Wire.endTransmission();
+
+              //exit the while loop.
+              break;
+
+
+            }
+
+          }
+
+        }
       }
 
-      //print the data.
+
+      //print the data to console
+
       Serial.print("Reading from Address:      ");
       Serial.print(addresses[j]);
       Serial.print( "\n" );
-      
+
       Serial.print("Read in:                   ");
       Serial.print(RTD_data);
       Serial.print( "\n" );
 
-      // PREPARE THE MESSAGE TO SEND TO BASE STATION OVER RADIO
-      
-      int n = sprintf( message, "%d : %s", addresses, RTD_data );
+      int n = sprintf( message, "%s : %d : %s", node_id, addresses[j], RTD_data );
 
       // SENDING DATA TO BASE STATION OVER RADIO
 
@@ -276,147 +292,16 @@ void get_reading( ) {
       Serial.print(message);
       Serial.print("\n");
 
-      rf95.send( (uint8_t *) message, 4 + max_reading_length );
-      
+      rf95.send( (uint8_t *) message, max_node_id_length + 4 + max_reading_length );
+
       Serial.println("\nMessage sent!\n\n\n" );
- 
+
       delay( 10 );
       rf95.waitPacketSent();
 
       serial_event = false;               //reset the serial event flag.
-
-    }
-    
-  }
-
-  }
-  
-}
-
-void send_sleep_command( int sensor_address ) {
-  
-  Wire.beginTransmission( sensor_address ) ;
-
-  //tell it to go to sleep
-  Wire.write( "Sleep" ) ;
-  
-  Wire.endTransmission( ) ;
-
-}
-
-int get_temperature_reading( int sensor_address, char* result_buffer ) {
-  
-  Wire.beginTransmission( sensor_address ) ;
-
-  //ask for a reading
-  Wire.write( "R" );
-  
-  Wire.endTransmission( ) ;
-  
-  delay( 600 ) ;
-
-  //request more than enough bytes
-  Wire.requestFrom( sensor_address, max_reading_length, 1 ) ;
-  
-  if ( Wire.read( ) != 1 ) {
-    
-    Serial.print( "error reading from device at address: " ) ;
-    Serial.println( sensor_address ) ;
-
-    //clean up - stop the current read transmission
-    Wire.endTransmission( ) ;
-
-    //put the device to sleep
-    send_sleep_command( sensor_address ) ;
-
-    //return -1 to indicate that the error occured
-    return -1;
-  
-  } else {
-    
-    int location = 0 ;
-
-    //while there are still bytes to read, and we havent exceeded max length
-    while ( Wire.available() && location < max_reading_length ) {
-
-      //the assignment operation we check here against does the work
-      // and evaluates as the char written so if it is a null terminator:
-      if((result_buffer[location++] = Wire.read()) == '\0') {
-
-        //we got a null terminator so exit the loop
-        break;
-        
-      }
-      
     }
 
-    //clean up - stop the current read transmission
-    Wire.endTransmission();
-
-    //put the device to sleep
-    send_sleep_command(sensor_address);
-
-    //return the number of characters that we wrote to the buffer
-    return location;
-    
   }
-  
+
 }
-
-int get_temperature_calibrated_sensor_reading(int sensor_address, char* temperature_reading_buffer, int length_of_temp, char* result_buffer) {
-  
-  Wire.beginTransmission(sensor_address);
-  
-  Wire.write('R');Wire.write('T');Wire.write(',');Wire.write(temperature_reading_buffer,length_of_temp);//send the callibrate and take readind command
-  
-  Wire.endTransmission();
-  
-  delay(300);
-  
-  Wire.requestFrom(sensor_address,max_reading_length,1);//request more than enough bytes
-  
-  if(Wire.read() != 1) {
-    
-    Serial.print("error reading from device at address: ");Serial.println(sensor_address);
-
-    //clean up - stop the current read transmission
-    Wire.endTransmission();
-
-    //put the device to sleep
-    send_sleep_command(sensor_address);
-
-    //return -1 to indicate that the error occured
-    return -1;
-    
-  } else {
-    
-    int location = 0;
-
-    //while there are still bytes to read, and we havent exceeded max length
-    while(Wire.available() && location < max_reading_length) {
-
-      //the assignment operation we check here against does the work, and evaluates as the char written so
-      //if it is a null terminator:
-      if((result_buffer[location++] = Wire.read()) == '\0') {
-
-        //we got a null terminator so exit the loop
-        break;
-        
-      }
-      
-    }
-
-    //clean up - stop the current read transmission
-    Wire.endTransmission();
-    
-    //put the device to sleep
-    send_sleep_command(sensor_address);
-
-    //return the number of characters that we wrote to the buffer
-    return location;
-    
-  }
-  
-}
-  
-
