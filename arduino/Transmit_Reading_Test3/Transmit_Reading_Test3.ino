@@ -32,9 +32,10 @@
 
 #define min_address 8                 //min possible EZO address
 #define max_address 119               //min possible EZO address
-#define number_of_EZO_sensors 3      //how many EZO sensors do we expect to read from, at most?
+#define number_of_EZO_sensors 3       //how many EZO sensors do we expect to read from, at most?
 #define frequency 1000                //how often will we read in data from the sensors, in ms?
 #define max_reading_length 10         //how long will the data read in from the sensor be at most?
+#define max_node_id_length 5          //how long will the node id be at most?
 #define RFM95_CS  8                   //for feather32u4
 #define RFM95_RST 4                   //for feather32u4
 #define RFM95_INT 7                   //for feather32u4
@@ -44,14 +45,16 @@
 
 int     addresses
 [number_of_EZO_sensors] =
-{101, 100, 105};           //an int array containing the addresses of the EZO sensors, potentially 8-119
+{101, 100, 105};                      //an int array containing the addresses of the EZO sensors, potentially 8-119
+char    node_id
+[max_node_id_length]="10";
 char    message                       //a string which we will transmit to the base station's Feather device via radio;
-[4 + max_reading_length];     //3 chars for the address, 1 char for a colon, and max_reading_length chars for the sensor's read-in data
+[max_node_id_length + 4 + max_reading_length];             //3 chars for the address, 1 char for a colon, and max_reading_length chars for the sensor's read-in data
 char    computerdata[20];             //a 20-byte char array containing the incoming data from the computer
 byte    received_from_computer = 0;   //how many characters have been received from the computer?
 byte    serial_event = 0;             //a flag to signal when data has been received from the pc/mac/other.
 byte    response_code = 0;            //used to hold the I2C response code.
-char    RTD_data[20];                 //a 20-byte char array containing the incoming data from the RTD circuit
+char    RTD_data[15];                 //a 15-byte char array containing the incoming data from the RTD circuit
 byte    in_char = 0;                  //a 1-byte buffer storing inbound bytes from the RTD Circuit
 byte    i = 0;                        //a counter used for RTD_data array
 int     time_ = 600;                  //used to change the delay needed depending on the command sent to the EZO Class RTD Circuit
@@ -281,7 +284,7 @@ void get_reading( ) {
       Serial.print(RTD_data);
       Serial.print( "\n" );
 
-      int n = sprintf( message, "%d : %s", addresses[j], RTD_data );
+      int n = sprintf( message, "%s : %d : %s", node_id, addresses[j], RTD_data );
 
       // SENDING DATA TO BASE STATION OVER RADIO
 
@@ -289,7 +292,7 @@ void get_reading( ) {
       Serial.print(message);
       Serial.print("\n");
 
-      rf95.send( (uint8_t *) message, 4 + max_reading_length );
+      rf95.send( (uint8_t *) message, max_node_id_length + 4 + max_reading_length );
 
       Serial.println("\nMessage sent!\n\n\n" );
 
