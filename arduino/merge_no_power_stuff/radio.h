@@ -13,6 +13,13 @@
 //Specify the frequency
 #define RF95_FREQ 915.0
 
+
+#define FEATHER_ID "1337"
+
+#define SIZE_RADIO_BUFFER 50
+
+char radio_message_buffer[SIZE_RADIO_BUFFER] = {'\0'};
+
 //Instanciate the singleton instance of rf95 to do radio comms.
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
@@ -37,6 +44,12 @@ bool setup_radio()
   return true;
 }
 
+
+void send_radio_message(char* message_buffer)
+{
+  sprintf(radio_message_buffer, FEATHER_ID ":%s", message_buffer);
+  rf95.send((uint8_t*)radio_message_buffer, SIZE_RADIO_BUFFER);
+}
 
 
 #endif
