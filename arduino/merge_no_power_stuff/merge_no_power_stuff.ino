@@ -20,7 +20,10 @@ void setup() {
   }
 
   setup_i2c(address_array);
-  Serial.println(address_array[0]);
+  for(int i=0; i<MAX_DEVICES;i++)
+  {
+    if(address_array[i]!=0)Serial.println(address_array[i]);
+  }
  //Steps:
  //init wire, radio, maybe serial?
  //scan i2c addresses
