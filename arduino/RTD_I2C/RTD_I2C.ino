@@ -10,7 +10,7 @@
 
 
 #include <Wire.h>                //enable I2C.
-#define address 100              //default I2C ID number for EZO RTD Circuit.
+#define address 98              //default I2C ID number for EZO RTD Circuit.
 
 
 
@@ -49,7 +49,7 @@ void loop(){                                                                    
         if(computerdata[0]=='c'||computerdata[0]=='r')time_=600;                  //if a command has been sent to calibrate or take a reading we wait 600ms so that the circuit has time to take the reading.  
        else time_=300;                                                            //if any other command has been sent we wait only 300ms.
        
-    
+    time_ = 1000;
     Wire.beginTransmission(address); //call the circuit by its ID number.  
     Wire.write(computerdata);        //transmit the command that was sent through the serial port.
     Wire.endTransmission();          //end the I2C data transmission. 
