@@ -2,6 +2,10 @@
 
 #define EZO_H
 
+#define SIZE_EZO_RESPONSE 40
+
+char _ezo_response[SIZE_EZO_RESPONSE] = {'\0'};
+
 #define SIZE_EZO_BUFFER 50
 
 char ezo_reading_buffer[SIZE_EZO_BUFFER] = {'\0'};
@@ -18,7 +22,7 @@ int get_temperature_reading(int sensor_address, char* result_buffer)
   Wire.write("R");//ask for a reading
   Wire.endTransmission();
   delay(600);
-  Wire.requestFrom(sensor_address,SIZE_EZO_BUFFER,1);//request more than enough bytes
+  Wire.requestFrom(sensor_address,SIZE_EZO_RESPONSE,1);//request more than enough bytes
   if(Wire.read() != 1)
   {
     //Serial.print("error reading from device at address: ");Serial.println(sensor_address);
@@ -29,15 +33,16 @@ int get_temperature_reading(int sensor_address, char* result_buffer)
   else
   {
     int location = 0;
-    while(Wire.available() && location < SIZE_EZO_BUFFER)//while there are still bytes to read, and we havent exceeded max length
+    while(Wire.available() && location < SIZE_EZO_RESPONSE)//while there are still bytes to read, and we havent exceeded max length
     {
-      if((result_buffer[location++] = Wire.read()) == '\0') //the assignment operation we check here against does the work, and evaluates as the char written so if it is a null terminator:
+      if((_ezo_response[location++] = Wire.read()) == '\0') //the assignment operation we check here against does the work, and evaluates as the char written so if it is a null terminator:
       {
 
         break;//we got a null terminator so exit the loop
       }
     }
     Wire.endTransmission();//clean up - stop the current read transmission
+    sprintf(result_buffer, "%d:%s", sensor_address, _ezo_response);
     send_sleep_command(sensor_address);//put the device to sleep
     return location;//return the number of characters that we wrote to the buffer
   }
