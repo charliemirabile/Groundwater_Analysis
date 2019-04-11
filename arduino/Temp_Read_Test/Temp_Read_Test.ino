@@ -28,6 +28,8 @@
 //Type commands into the Arduino serial monitor to control the RTD temperature circuit.
 //This code was written in the Arduino 1.6.11 IDE
 //An Arduino UNO was used to test this code.
+//
+//
 
 
 #include <SoftwareSerial.h>                           //we have to include the SoftwareSerial library, or else we can't use it
