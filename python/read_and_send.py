@@ -2,8 +2,7 @@ import serial,requests,json,time,datetime,sys
 
 base_station_feather_identifier = '/dev/ttyACM0'
 
-feather_ids_to_address_dictionaries_for_descriptions = 
-{
+feather_ids_to_address_dictionaries_for_descriptions = {
 	1337:
 	{
 		7:"battery",
@@ -17,8 +16,7 @@ feather_ids_to_address_dictionaries_for_descriptions =
 	}
 }
 
-node_ids_to_position_information =
-{
+node_ids_to_position_information = {
 	1337:
 	{
 		"depth":5,
