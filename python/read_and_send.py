@@ -2,15 +2,54 @@ import serial,requests,json,time,datetime,sys
 
 base_station_feather_identifier = '/dev/ttyACM0'
 
-sensor_identifiers_to_iSense_feilds = {
-        #must add
-    }
+feather_ids_to_address_dictionaries_for_descriptions = 
+{
+	1337:
+	{
+		7:"battery",
+		101:"apple",
+		102:"banana"
+	},
+	1338:
+	{
+		7:"battery",
+		101:"test"
+	}
+}
 
-timestamp_feild_identifier = '' #must add
+node_ids_to_position_information =
+{
+	1337:
+	{
+		"depth":5,
+		"lat":5,
+		"long":5
+	},
+	1338:
+	{
+		"depth":7,
+		"lat":8,
+		"long":3
+	}
+}
+
+
+iSense_field_idenfifiers = {#MUST ADD
+
+	'timestamp' : '',
+	'metric' : '',
+	'latitude' : '',
+	'longitude' : '',
+	'depth' : '',
+	'reading' : ''
+}
+
+
+
 
 iSense_contribution_key = 'rpi-key'
 
-iSense_dataset_id = '' #must add
+iSense_dataset_id = '' #MUST ADD
 
 def get_formatted_timestamp():
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -41,18 +80,23 @@ while True:
         print(input)
         
         try:
-            sensor_identifier,reading = input.split(':')
+            feather_identifier, sensor_identifier, reading = input.split(':')
         except ValueError as e:
             print(e)
-            print('malformed message - no delimeter or more than one')
+            print('malformed message - wrong number of delimeters')
         try:
             iSense_feild_identifier = sensor_identifiers_to_iSense_feilds[sensor_identifier]
         except KeyError as e:
             print(e)
             print('unexpected sensor identifier encountered - no corresponding feild in iSense')
         data = {
-                iSense_feild_identifier:[reading],
-                timestamp_feild_identifier:[get_formatted_timestamp()]
+                iSense_field_idenfifiers['timestamp']:[get_formatted_timestamp()],
+		iSense_field_idenfifiers['latitude']:[node_ids_to_position_information[feather_identifier]['lat']],
+		iSense_field_idenfifiers['longitude']:[node_ids_to_position_information[feather_identifier]['long']],
+		iSense_field_idenfifiers['depth']:[node_ids_to_position_information[feather_idetifier]['depth']],
+		iSense_field_idenfifiers['reading']:[reading],
+		iSense_field_idenfifiers['metric']:[feather_ids_to_address_dictionaries_for_descriptions[feather_identifier][sensor_identifier]]
+
             }
         try:
             iSense_append_data(iSense_contribution_key,iSense_dataset_id,data)
