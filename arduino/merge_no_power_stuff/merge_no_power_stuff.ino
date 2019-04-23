@@ -70,5 +70,5 @@ void loop() {
   
   //Go to sleep
   
-  delay(5000);
+  delay(100);
 }

@@ -34,12 +34,12 @@ node_ids_to_position_information = {
 
 iSense_field_idenfifiers = {#MUST ADD
 
-	'timestamp' : '',
-	'metric' : '',
-	'latitude' : '',
-	'longitude' : '',
-	'depth' : '',
-	'reading' : ''
+	'timestamp' : 18367,
+	'metric' : 18370,
+	'latitude' : 18365,
+	'longitude' : 18366,
+	'depth' : 18368,
+	'reading' : 18369
 }
 
 
@@ -74,9 +74,9 @@ except:
 while True:
     try:
         input = str(base_station_feather.readline())
-        
+
         print(input)
-        
+
         try:
             feather_identifier, sensor_identifier, reading = input.split(':')
         except ValueError as e:
@@ -106,8 +106,3 @@ while True:
     except:
         e = sys.exc_info()[0]
         print(e)
-        
-    
-    
-    
-    
