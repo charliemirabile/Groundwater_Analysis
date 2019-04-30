@@ -11,12 +11,15 @@
 #define MAX_DEVICES 10
 
 int address_array[MAX_DEVICES]={0};
-
+//Precondition: pAddressArray is a pointer to allocated memory
+//Postcondition: iterates over all possible addresses and sees which ones give a response.
+//Stores the ones that give a response in the array pointed to by pAddressArray.
 void scan_i2c_bus(int* pAddressArray, int max_addresses)
 {
   int address,status_code;
   int next_index_to_fill=0;
-  for(address=MIN_VALID_ADDRESS;address<=MAX_VALID_ADDRESS && next_index_to_fill<max_addresses; address++)//iterate over addresses 8-119 and ensure we dont fill past end of array
+  for(address=MIN_VALID_ADDRESS;address<=MAX_VALID_ADDRESS && next_index_to_fill<max_addresses; address++)
+  //iterate over addresses 8-119 and ensure we dont fill past end of array
   {
     Wire.beginTransmission(address);
     status_code = Wire.endTransmission(true);
@@ -28,7 +31,8 @@ void scan_i2c_bus(int* pAddressArray, int max_addresses)
   }
 }
 
-
+//Precondition: pArray is a pointer to allocated memory
+//Postcondition: Begins i2c transmission and calls scan_i2c_bus to find all devices on the bus
 bool setup_i2c(int* pArray)
 {
   Wire.begin();
