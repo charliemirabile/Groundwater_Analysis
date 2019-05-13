@@ -37,7 +37,7 @@ void setup() {
 void loop() {
   
   //testing code to make output more readable on RSPI
-  send_radio_message("\n\n\n\n");
+//  send_radio_message("\n\n\n\n");
 
   
   //Steps:
