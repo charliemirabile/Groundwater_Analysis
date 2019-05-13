@@ -23,6 +23,11 @@ char radio_message_buffer[SIZE_RADIO_BUFFER] = {'\0'};
 //Instanciate the singleton instance of rf95 to do radio comms.
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
+// preconditions:
+//  - no arguments
+// postconditions:
+//  - if radio is successfully set up, return true
+
 bool setup_radio()
 {
   pinMode(RFM95_RST, OUTPUT);
@@ -44,6 +49,10 @@ bool setup_radio()
   return true;
 }
 
+// preconditions:
+//  - message_buffer is a string that contains the message to be sent via radio
+// postconditions:
+//  - message_buffer is set and sent via radio
 
 void send_radio_message(char* message_buffer)
 {
