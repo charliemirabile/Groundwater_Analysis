@@ -3,10 +3,7 @@
 SoftwareSerial ezo_board(10,11);
 
 void setup() {
-  while(!Serial.begin(9600))
-  {
-    delay(10);
-  }
+  Serial.begin(9600);
   Serial.println("Begining Programming");
   pinMode(LED_BUILTIN,OUTPUT);
   pinMode(A0,OUTPUT);
