@@ -58,6 +58,7 @@ void send_radio_message(char* message_buffer)
 {
   sprintf(radio_message_buffer, FEATHER_ID ":%s", message_buffer);
   rf95.send((uint8_t*)radio_message_buffer, SIZE_RADIO_BUFFER);
+  rf95.waitPacketSent();
 }
 
 

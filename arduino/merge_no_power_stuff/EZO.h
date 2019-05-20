@@ -34,7 +34,7 @@ int get_temperature_reading(int sensor_address, char* result_buffer)
   Wire.beginTransmission(sensor_address);
   Wire.write("R");//ask for a reading
   Wire.endTransmission();
-  delay(600);
+  delay(2000);
   Wire.requestFrom(sensor_address,SIZE_EZO_RESPONSE,1);//request more than enough bytes
   if(Wire.read() != 1)
   {
@@ -50,7 +50,6 @@ int get_temperature_reading(int sensor_address, char* result_buffer)
     {
       if((_ezo_response[location++] = Wire.read()) == '\0') //the assignment operation we check here against does the work, and evaluates as the char written so if it is a null terminator:
       {
-
         break;//we got a null terminator so exit the loop
       }
     }

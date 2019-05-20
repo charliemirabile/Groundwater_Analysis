@@ -37,7 +37,7 @@ void setup() {
 void loop() {
   
   //testing code to make output more readable on RSPI
-//  send_radio_message("\n\n\n\n");
+  //  send_radio_message("\n\n\n\n");
 
   
   //Steps:
@@ -60,7 +60,7 @@ void loop() {
     }
   }
 
-  //Scan the 6 analogue pins
+//  //Scan the 6 analogue pins
   for(int i=0;i<6;i++)
   {
     format_analog_reading(A0+i, analog_reading_buffer);
