@@ -5,13 +5,13 @@ base_station_feather_identifier = '/dev/ttyACM0'
 feather_ids_to_address_dictionaries_for_descriptions = {
 	'1337':
 	{
-		'7':"battery",
+		'100':"battery",
 		'101':"apple",
 		'102':"banana"
 	},
 	'1338':
 	{
-		'7':"battery",
+		'100':"battery",
 		'101':"test"
 	}
 }
@@ -58,6 +58,7 @@ def iSense_append_data(contribution_key,dataset_ID,data):
         'id':dataset_ID,
         'data':data
     }
+    print(data['18370'])
     headers = {'content-type':'application/json'}
     request = requests.post('https://isenseproject.org/api/v1/data_sets/append',data=json.dumps(payload),headers=headers)
     print(request)
@@ -86,6 +87,7 @@ while True:
             print(e)
             print('malformed message - wrong number of delimeters')
         try:
+		print(sensor_identifier)
 		data = {
                 	iSense_field_idenfifiers['timestamp']:[get_formatted_timestamp()],
 			iSense_field_idenfifiers['latitude']:[node_ids_to_position_information[feather_identifier]['lat']],
@@ -97,14 +99,17 @@ while True:
 	except KeyError as e:
 		print(e)
 		print('unexpected sensor identifier encountered - no corresponding feild in iSense')
+		raise
 	except NameError as e:
 		print(e)
 		print('here')
+		raise
         try:
             iSense_append_data(iSense_contribution_key,iSense_dataset_id,data)
         except requests.exceptions.RequestException as e:
             print(e)
             print('error making request to iSense - no internet or issues with iSense')
+	    raise
     except KeyboardInterrupt as e:
         raise
     except:
