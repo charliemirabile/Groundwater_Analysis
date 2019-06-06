@@ -6,7 +6,7 @@ feather_ids_to_address_dictionaries_for_descriptions = {
 	'1337':
 	{
 		'100':"battery",
-		'101':"apple",
+		'69':"temperature",
 		'102':"banana"
 	},
 	'1338':
