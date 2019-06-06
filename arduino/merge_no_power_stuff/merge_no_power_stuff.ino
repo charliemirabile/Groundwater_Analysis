@@ -50,12 +50,12 @@ void loop() {
   
   //Scan all valid i2c addresses and transmit readings or error stuff?
 
-  //Needs work - doesnt callibrate readings in any way
+  //Needs work - doesnt callibrate readings in any way (For first test no calibration, we will worry about this later)
   for(int i=0; i<MAX_DEVICES;i++)
   {
     if(address_array[i]!=0)
     {
-        get_temperature_reading(address_array[i],ezo_reading_buffer);
+        get_sensor_reading(address_array[i],ezo_reading_buffer);
         send_radio_message(ezo_reading_buffer);
     }
   }
@@ -70,5 +70,5 @@ void loop() {
   
   //Go to sleep
   
-  delay(100);
+  delay(1000);
 }

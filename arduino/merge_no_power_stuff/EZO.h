@@ -26,10 +26,10 @@ void send_sleep_command(int sensor_address){
 //  - sensor_address is the address of an EZO board or the analog pin number where the sensor is taking a temperature reading
 //  - result_buffer is a null terminated string where sensor_address followed by ':' followed by the temperature reading will be stored
 // postcondition:
-//  - temperature reading is taken at sensor_address, the reading is stored in result_buffer, and the sensor at sensor_address is put to sleep.
+//  - EZO board reading is taken at sensor_address, the reading is stored in result_buffer, and the sensor at sensor_address is put to sleep.
 //  - the number of characters that we wrote to the buffer is returned
 
-int get_temperature_reading(int sensor_address, char* result_buffer)
+int get_sensor_reading(int sensor_address, char* result_buffer)
 {
   Wire.beginTransmission(sensor_address);
   Wire.write("R");//ask for a reading
