@@ -4,7 +4,8 @@
 
 #define SIZE_ANALOG_BUFFER 20
 
-#define BAT_PIN A7
+#define BAT_PIN 9
+//change this to 9 but not now cause the python and for testing purposes
 #define BAT_STRING "7"
 
 char analog_reading_buffer[SIZE_ANALOG_BUFFER];

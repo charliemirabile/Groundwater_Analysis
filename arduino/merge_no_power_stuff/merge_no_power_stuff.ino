@@ -1,3 +1,5 @@
+
+//
 #include "I2C.h"
 #include "EZO.h"
 #include "radio.h"
@@ -6,11 +8,8 @@
 
 void setup() {
  //Steps:
- 
  //init wire, radio, maybe serial?
   Serial.begin(9600);
-  while(!Serial)delay(1);
-
   
   bool radio_success = setup_radio();
 
@@ -43,10 +42,11 @@ void loop() {
   //Steps:
   
   //Check battery; send message if low
-  if(battery_low()){
+  //if(battery_low()){
+  //Sending battery
     format_battery_reading(analog_reading_buffer);
     send_radio_message(analog_reading_buffer);
-  }
+  //}
   
   //Scan all valid i2c addresses and transmit readings or error stuff?
 
@@ -60,15 +60,16 @@ void loop() {
     }
   }
 
-//  //Scan the 6 analogue pins
+//  //Scan the 6 analogue pins (NOT USING)
+/*
   for(int i=0;i<6;i++)
   {
     format_analog_reading(A0+i, analog_reading_buffer);
     send_radio_message(analog_reading_buffer);
   }
-
+*/
   
   //Go to sleep
   
-  delay(1000);
+  delay(30000);
 }

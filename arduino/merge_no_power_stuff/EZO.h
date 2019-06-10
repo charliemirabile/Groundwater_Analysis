@@ -39,7 +39,6 @@ int get_sensor_reading(int sensor_address, char* result_buffer)
   if(Wire.read() != 1)
   {
     //Serial.print("error reading from device at address: ");Serial.println(sensor_address);
-    Wire.endTransmission();//clean up - stop the current read transmission
     send_sleep_command(sensor_address);//put the device to sleep
     return -1;//return -1 to indicate that the error occured
   }
@@ -53,7 +52,6 @@ int get_sensor_reading(int sensor_address, char* result_buffer)
         break;//we got a null terminator so exit the loop
       }
     }
-    Wire.endTransmission();//clean up - stop the current read transmission
     sprintf(result_buffer, "%d:%s", sensor_address, _ezo_response);
     send_sleep_command(sensor_address);//put the device to sleep
     return location;//return the number of characters that we wrote to the buffer
