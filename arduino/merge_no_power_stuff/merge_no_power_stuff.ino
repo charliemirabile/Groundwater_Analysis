@@ -1,5 +1,4 @@
-
-//
+#include <Adafruit_SleepyDog.h>
 #include "I2C.h"
 #include "EZO.h"
 #include "radio.h"
@@ -59,17 +58,10 @@ void loop() {
         send_radio_message(ezo_reading_buffer);
     }
   }
-
-//  //Scan the 6 analogue pins (NOT USING)
-/*
-  for(int i=0;i<6;i++)
-  {
-    format_analog_reading(A0+i, analog_reading_buffer);
-    send_radio_message(analog_reading_buffer);
-  }
-*/
   
   //Go to sleep
-  
-  delay(30000);
+  int counter = 1;
+  while(counter--)
+    Watchdog.sleep();
+  //delay(2000);
 }
