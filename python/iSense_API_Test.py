@@ -26,25 +26,25 @@ def createData():
             '18369': [str(random.randint(0,100))],
             '18370': ['Hello World!'],
             '18367': [getFormattedTimestamp()]
-        } 
+        }
     return data
 
 def createEmptyDataset():
     payload = {
         'title': 'R-Pi dataset',
-        'contribution_key': 'keykey',
+        'contribution_key': 'test',
         'contributor_name': 'Raspberry Pi',
         'data':{
-            '18367': [getFormattedTimestamp()],
-            '18370': ['asdfasdf'],
-            '18365': ['37'],
-            '18366': ['37'],
-            '18368': ['5'],
-            '18369': [5]
+            '18399': [getFormattedTimestamp()],
+            '18400': ['0'],
+            '18397': ['0'],
+            '18398': ['0'],
+            '18401': ['0'],
+            '18402': ['0']
         }
     }
     headers = {'content-type':'application/json'}
-    request = requests.post('https://isenseproject.org/api/v1/projects/3651/jsonDataUpload',data=json.dumps(payload),headers=headers)
+    request = requests.post('https://isenseproject.org/api/v1/projects/3694/jsonDataUpload',data=json.dumps(payload),headers=headers)
     print(request)
     print(request.url)
     print(request.text)
