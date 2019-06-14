@@ -7,8 +7,17 @@ def list_of_configurations():
     return [file for file in os.listdir(PATH_TO_CONFIG_FOLDER) if not file == FILENAME_FOR_ACTIVE_CONFIG]
 
 def edit_config_menu(current_config):
-    return current_config
-
+    #So far, the edit function here takes a python object that was obtained from JSON
+    #The user can edit the object which will the be returned for dumping 
+    print(current_config)
+    print("What would you like to edit?")
+    print("iSense?") #Highest level
+    print("Nodes?") #Highest level
+    print("Feather ID?") # Within Nodes
+    print("Location") #Within Nodes
+    print("Sensors") # Within Feather ID
+    print("Id and Type") #Within Sensors
+    #This function is going to be horible to write because of all the layers too it
 #Functions for menu
 def new_configuration():
     print("Making a new configuration!\n")
@@ -28,10 +37,10 @@ def edit_configuration():
             print('-------------------------------------------------------------------')
             return
         if selection in list(option_dictionary):
-            ans = input('Are you sure you want to delete ' + option_dictionary[selection] + ' forever? (Y/n): ')[0].lower()
-            if ans == 'y':
-                os.remove(PATH_TO_CONFIG_FOLDER + option_dictionary[selection] + '.json')
-                should_continue = True
+            with open(PATH_TO_CONFIG_FOLDER + option_dictionary[selection]+'.json') as f:
+                current = json.load(f)
+            edit_config_menu(current)
+            return
         else:
             print('Error: Invalid Option')
 def delete_configuration():
