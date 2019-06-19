@@ -1,6 +1,83 @@
 import serial,requests,json,time,datetime,sys
 
-base_station_feather_identifier = '/dev/ttyACM0'
+config = {
+    'iSense_info':
+    {
+        'dataset_id':'<TEMP>',
+        'contr`ibution_key':'<TEMP>',
+        'feild_identifiers':
+        {
+            'timestamp_identifier':'<TEMP>',
+            'reading_identifier':'<TEMP>',
+            'node_level':
+            {
+                'lat':'<TEMP>',
+                'long':'<TEMP>'
+            },
+            'sensor_level':
+            {
+                'type':'<TEMP>',
+                'depth':'<TEMP>'
+            }
+        }
+    },
+    'nodes':
+    {
+        '1337':
+        {
+            'node_level':
+            {
+                'lat':'<TEMP>',
+                'long':'<TEMP>'
+            },
+            'sensors':
+            {
+                '67':
+                {
+                    'type':'<TEMP>',
+                    'depth':'<TEMP>'
+                },
+                '68':
+                {
+                    'type':'<TEMP>',
+                    'depth':'<TEMP>'
+                },
+                '69':
+                {
+                    'type':'<TEMP>',
+                    'depth':'<TEMP>'
+                }
+            }
+        },
+        '1338':
+        {
+            'node_level':
+            {
+                'lat':'<TEMP>',
+                'long':'<TEMP>'
+            },
+            'sensors':
+            {
+                '67':
+                {
+                    'type':'<TEMP>',
+                    'depth':'<TEMP>'
+                },
+                '68':
+                {
+                    'type':'<TEMP>',
+                    'depth':'<TEMP>'
+                },
+                '69':
+                {
+                    'type':'<TEMP>',
+                    'depth':'<TEMP>'
+                }
+            }
+        }
+    }
+}
+
 
 feather_ids_to_address_dictionaries_for_descriptions = {
 	'1337':
@@ -64,6 +141,13 @@ def iSense_append_data(contribution_key,dataset_ID,data):
     #print(request)
     #print(request.text)
 #	request.text
+
+if len(sys.argv) > 1:
+    base_station_feather_identifier = sys.argv[1]
+else:
+    base_station_feather_identifier = '/dev/ttyACM0'
+
+print('Will attempt to communicate with feather at: ' + base_station_feather_identifier)
 
 try:
     base_station_feather = serial.Serial(base_station_feather_identifier,9600)
