@@ -8,7 +8,11 @@ def get_valid_input(prompt_string):
 	return response
 
 def edit_node_level_identifiers(current_config):
-	
+	backup_config = current_config
+	option_dictionary = {'1':'Cancel', '2':'Save and return to previos menu', '3': 'Create new node identifier', '4': 'Edit existing node identifier',
+	{'5': 'Delete existing node identifier'}
+	print("What do you want to do?")
+	return current_config
 
 def edit_field_identifiers(current_config):
 	backup_config = current_config
@@ -17,7 +21,6 @@ def edit_field_identifiers(current_config):
 	option_dictionary = {'1':'Cancel', '2' : 'Save and return to previous menu', '3': 'Edit timestamp identifier', '4' : 'Edit reading identifier',
 	'5': 'Edit node level identifiers', '6': 'Edit sesor level identifiers'}
 	print("What do you want to do?")
-	print(current_config)
 	print('-------------------------------------------------------------------')
 	while True:
 		for index in sorted(option_dictionary):
@@ -74,5 +77,5 @@ def edit_iSense_config(current_config):
 			print("Successfully changed the contribution_key")
 		if selection == '5':
 			edit_field_identifiers(current_config)
-poop = {}
-edit_iSense_config(poop)
+test = {}
+edit_iSense_config(test)
