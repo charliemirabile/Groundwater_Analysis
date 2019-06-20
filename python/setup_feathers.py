@@ -5,35 +5,23 @@ FILENAME_FOR_ACTIVE_CONFIG = 'active_configuration.txt'
 def list_of_configurations():
     return [file for file in os.listdir(PATH_TO_CONFIG_FOLDER) if not file == FILENAME_FOR_ACTIVE_CONFIG]
 
-def edit_config_menu(current_config):
-    #So far, the edit function here takes a python object that was obtained from JSON
-    #The user can edit the object which will the be returned for dumping 
-    print(current_config)
-    return current_config
-    while True:
-        print('What would you like to do?\n' +
-            '\t1. Cancel\n' + 
-            '\t2. Add a new configuration\n' + 
-            '\t3. Edit an existing configuration\n' + 
-            '\t4. Delete an existing configuration\n' + 
-            '\t5. Set as active configuration'
-        )
-        selection = input('Please enter the appropriate number to indicate your choice: ')
-        if selection == '1':
-            return
-        if selection in top_level_edit_config:
-            chosen_func = top_level_edit_config[selection]
-            chosen_func()
-        else:
-            print('-------------------------------------------------------------------')
-            print('Invalid choice')    #This function is going to be horible to write because of all the layers too it
-    
 def get_valid_input(prompt_string):
     response = input(prompt_string)
     while not re.match(r'^([a-zA-Z0-9_\-\(\)])+$', response):
         print("Invalid input, please use only alphanumeric characters undescores dashes or parentheses.")
         response = input(prompt_string)
     return response
+
+def edit_config_menu(current_config):
+    #So far, the edit function here takes a python object that was obtained from JSON
+    #The user can edit the object which will the be returned for dumping
+    print('-------------------------------------------------------------------')
+    option_dictionary = {'1': 'Cancel', '2':'Edit iSense configuration', '3':'Edit Nodes'}
+    print("What do you want to do?")
+    for index in sorted(option_dictionary):
+        print('{0}. {1}'.format(index, option_dictionary[index]))
+    selection = input('Please enter the appropriate number to indicate your choice: ')
+    return current_config
 
 def new_configuration():
     option_dictionary = {'1':'Cancel','2':'New empty configuration','3':'Create copy of existing configuration'}
@@ -50,8 +38,10 @@ def new_configuration():
         print('What should the new configuration be named?')
         name = get_valid_input('Name: ')
         f = open(PATH_TO_CONFIG_FOLDER + name + '.json','w')
-        json.dump(edit_config_menu({}),f, indent=2)
+        f.write('{}')
         f.close()
+        print('-------------------------------------------------------------------')
+        print('Successfully added new configuration' + name)
         return
     if selection == '3':
         config_dictionary = {}
@@ -71,7 +61,10 @@ def new_configuration():
                 json.dump(json.load(original),copy, indent=2)
                 original.close()
                 copy.close()
+                print('-------------------------------------------------------------------')
+                print('Successfully added new configuration' + name)
                 return
+            
             print('-------------------------------------------------------------------')
             print('Error: Invalid Option')
             print("Which configuration do you want to delete");    
@@ -149,7 +142,7 @@ def set_active():
             f.write(option_dictionary[selection])
             f.close()
             print('-------------------------------------------------------------------')
-            print('Successfully set ' + option_dictionary[selection] + 'as active configuration')
+            print('Successfully set ' + option_dictionary[selection] + ' as active configuration')
             return
         print('-------------------------------------------------------------------')
         print('Error: Invalid Option')

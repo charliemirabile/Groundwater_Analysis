@@ -4,7 +4,7 @@ config = {
     'iSense_info':
     {
         'dataset_id':'<TEMP>',
-        'contr`ibution_key':'<TEMP>',
+        'contribution_key':'<TEMP>',
         'feild_identifiers':
         {
             'timestamp_identifier':'<TEMP>',
