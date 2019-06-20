@@ -17,6 +17,13 @@ void setup() {
   delay(1000);
 }
 
+#define AVG_SIZE 100
+
+float avg[AVG_SIZE] = {0};
+
+int counter = 0;
+
+
 void loop() {
   // put your main code here, to run repeatedly:
 
@@ -27,10 +34,21 @@ void loop() {
   }
   
   calibrate_INA(64);
+  float sum=0;
+  for(int i=1;i<AVG_SIZE;i++)
+  {
+    sum+=(avg[i-1]=avg[i]);
+  }
+  sum += (avg[AVG_SIZE-1] = ((((float)get_raw_current(64)/(float)1000)-4)*1.25));
   
-  Serial.println(get_raw_current(64));
- 
-  delay(100);
+  //Serial.print(get_raw_current(64));
+  Serial.println(sum/AVG_SIZE);
+  //Serial.println(((((float)get_raw_current(64)/(float)1000)-4)*1.25));
+  //delay(100);
+
+  if(!counter)Serial.println("-----------------------------------------------------");
+  counter++;
+  counter %= 100;
 }
 
 //FUNCTION BODIES
