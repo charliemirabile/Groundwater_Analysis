@@ -19,8 +19,8 @@ def edit_generic_level_identifiers(current_config, type):
 	backup_config = current_config
 	if type not in current_config['iSense_info']['field_identifiers']:
 		current_config['iSense_info']['field_identifiers'][type] = {}
-	option_dictionary = {'1':'Cancel', '2':'Save and return to previous menu', '3': 'Create new node identifier', '4': 'Edit existing node identifier',
-	'5': 'Delete existing node identifier'}
+	option_dictionary = {'1':'Cancel', '2':'Save and return to previous menu', '3': 'Create new identifier', '4': 'Edit existing identifier',
+	'5': 'Delete existing identifier'}
 	print("What do you want to do?")
 	print('-------------------------------------------------------------------')
 	while True:
@@ -43,6 +43,17 @@ def edit_generic_level_identifiers(current_config, type):
 			print('Successfully added a new ' + type + ' identifier')
 		if selection == '4':
 			print('-------------------------------------------------------------------')
+			identifier_dictionary = {'1':'Cancel'}
+			for indx, val in enumerate(current_config['iSense_info']['field_identifiers'][type].keys()):
+				identifier_dictionary[str(indx + 2)] = val
+			for indx in sorted(identifier_dictionary):
+				print('{0}. {1}'.format(indx, identifier_dictionary[indx]))
+			choice = get_valid_numeric_input("Which " + type + " identifier would you like to delete: ")
+			if choice == '1':
+				continue
+			if choice in list(identifier_dictionary):
+				change = get_valid_numeric_input('Please enter the new field identifier: ')
+				current_config['iSense_info']['field_identifiers'][type][identifier_dictionary[choice]] = change
 		if selection == '5':
 			print('-------------------------------------------------------------------')
 			identifier_dictionary = {'1':'Cancel'}
@@ -63,13 +74,13 @@ def edit_generic_level_identifiers(current_config, type):
 				else:
 					print('-------------------------------------------------------------------')
 					print('Delection canceled')
-
+		print(current_config)
 def edit_field_identifiers(current_config):
 	backup_config = current_config
 	if 'field_identifiers' not in current_config['iSense_info']:
 		current_config['iSense_info']['field_identifiers'] = {}
 	option_dictionary = {'1':'Cancel', '2' : 'Save and return to previous menu', '3': 'Edit timestamp identifier', '4' : 'Edit reading identifier',
-	'5': 'Edit node level identifiers', '6': 'Edit sesor level identifiers'}
+	'5': 'Edit node level identifiers', '6': 'Edit sensor level identifiers'}
 	print("What do you want to do?")
 	print('-------------------------------------------------------------------')
 	while True:
