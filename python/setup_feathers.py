@@ -12,15 +12,45 @@ def get_valid_input(prompt_string):
         response = input(prompt_string)
     return response
 
+def edit_iSense_config(current_config):
+    print('-------------------------------------------------------------------')
+    print('edited iSense info')
+    print('-------------------------------------------------------------------')
+    return current_config
+
+def edit_node_config(current_config):
+    print('-------------------------------------------------------------------')
+    print('edited node info')
+    print('-------------------------------------------------------------------')
+    return current_config
+
 def edit_config_menu(current_config):
+    backup_config = current_config
     #So far, the edit function here takes a python object that was obtained from JSON
     #The user can edit the object which will the be returned for dumping
-    print('-------------------------------------------------------------------')
-    option_dictionary = {'1': 'Cancel', '2':'Edit iSense configuration', '3':'Edit Nodes'}
-    print("What do you want to do?")
-    for index in sorted(option_dictionary):
-        print('{0}. {1}'.format(index, option_dictionary[index]))
-    selection = input('Please enter the appropriate number to indicate your choice: ')
+    while True:
+        print('-------------------------------------------------------------------')
+        option_dictionary = {'1': 'Cancel', '2':'Save and return to previous menu', '3':'Edit iSense configuration', '4':'Edit Nodes'}
+        print("What do you want to do?")
+        for index in sorted(option_dictionary):
+            print('{0}. {1}'.format(index, option_dictionary[index]))
+        selection = input('Please enter the appropriate number to indicate your choice: ')
+        if selection=='1':
+            print('-------------------------------------------------------------------')
+            print('Successfully cancelled changes')
+            return backup_config
+        if selection=='2':
+            print('-------------------------------------------------------------------')
+            print('Successfully saved changes')
+            return current_config
+        if selection=='3':
+            current_config = edit_iSense_config(current_config)
+            continue
+        if selection=='4':
+            current_config = edit_node_config(current_config)
+            continue
+        print('Error invalid choice')
+    
     return current_config
 
 def new_configuration():
@@ -50,7 +80,7 @@ def new_configuration():
         print('-------------------------------------------------------------------')
         print('What configuration do you want to copy?')
         for index in sorted(config_dictionary):
-            print('\t{0}. {1}'.format(index, config_dictionary[index]))
+            print('{0}. {1}'.format(index, config_dictionary[index]))
         while True:        
             selection = input("Please enter the number corresponding to your selection: ")
             if selection in list(config_dictionary):
@@ -100,7 +130,7 @@ def delete_configuration():
     print('-------------------------------------------------------------------')
     print("Which configuration do you want to delete");
     for index in sorted(option_dictionary):
-        print('\t{0}. {1}'.format(index, option_dictionary[index]))
+        print('{0}. {1}'.format(index, option_dictionary[index]))
     while True:        
         selection = input("Please enter the number corresponding to your selection: ")
         if(selection == '1'):
@@ -121,7 +151,7 @@ def delete_configuration():
         print('Error: Invalid Option')
         print("Which configuration do you want to delete");
         for index in sorted(option_dictionary):
-            print('\t{0}. {1}'.format(index, option_dictionary[index]))
+            print('{0}. {1}'.format(index, option_dictionary[index]))
 def set_active():
     option_dictionary = {'1':'Cancel'}
     for index,value in enumerate(list_of_configurations()):
@@ -130,7 +160,7 @@ def set_active():
     print('-------------------------------------------------------------------')
     print('Which configuration do you want to set active?')
     for index in sorted(option_dictionary):
-        print('\t{0}. {1}'.format(index, option_dictionary[index]))
+        print('{0}. {1}'.format(index, option_dictionary[index]))
 
     while True:
         selection = input("Please enter the number corresponding to your selection: ")
@@ -150,30 +180,29 @@ def set_active():
         for index in sorted(option_dictionary):
             print('\t{0}. {1}'.format(index, option_dictionary[index]))
 
-menu_numbers_to_functions = {
-    '2': new_configuration,
-    '3': edit_configuration,
-    '4': delete_configuration,
-    '5': set_active
-    }
-
 def main_menu():
+    option_dictionary = {'1':'Cancel','2':'Add new configuration','3':'Edit configuration','4':'Delete configuration','5':'Set the active configuration'}
+    print('-------------------------------------------------------------------')
     while True:
-        print('What would you like to do?\n' +
-            '\t1. Cancel\n' + 
-            '\t2. Add a new configuration\n' + 
-            '\t3. Edit an existing configuration\n' + 
-            '\t4. Delete an existing configuration\n' + 
-            '\t5. Set as active configuration'
-        )
+        print('What would you like to do?')
+        for index in sorted(option_dictionary):
+            print('{0}. {1}'.format(index, option_dictionary[index]))
         selection = input('Please enter the appropriate number to indicate your choice: ')
         if selection == '1':
             return
-        if selection in menu_numbers_to_functions:
-            chosen_func = menu_numbers_to_functions[selection]
-            chosen_func()
-        else:
-            print('-------------------------------------------------------------------')
-            print('Invalid choice')
+        if selection == '2':
+            new_configuration()
+            continue
+        if selection == '3':
+            edit_configuration()
+            continue
+        if selection == '4':
+            delete_configuration()
+            continue
+        if selection == '5':
+            set_active()
+            continue
+        print('-------------------------------------------------------------------')
+        print('Invalid choice')
 
 main_menu()
