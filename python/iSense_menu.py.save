@@ -15,19 +15,12 @@ def get_valid_numeric_input(prompt_string):
 		response = input(prompt_string)
 	return response
 
-def get_regex_input(regex, prompt_string, error_string):
-	response = input (prompt_string)
-	while not re.match(regex, response)
-		print(error_string)
-		response = input(prompt_string)
-	return response
-
 def edit_generic_level_identifiers(current_config, type):
 	backup_config = current_config
 	if type not in current_config['iSense_info']['field_identifiers']:
 		current_config['iSense_info']['field_identifiers'][type] = {}
-	option_dictionary = {'1':'Cancel', '2':'Save and return to previous menu', '3': 'Create new identifier', '4': 'Edit existing identifier',
-	'5': 'Delete existing identifier'}
+	option_dictionary = {'1':'Cancel', '2':'Save and return to previous menu', '3': 'Create new node identifier', '4': 'Edit existing node identifier',
+	'5': 'Delete existing node identifier'}
 	print("What do you want to do?")
 	print('-------------------------------------------------------------------')
 	while True:
@@ -55,12 +48,12 @@ def edit_generic_level_identifiers(current_config, type):
 				identifier_dictionary[str(indx + 2)] = val
 			for indx in sorted(identifier_dictionary):
 				print('{0}. {1}'.format(indx, identifier_dictionary[indx]))
-			choice = get_valid_numeric_input("Which " + type + " identifier would you like to delete: ")
+			choice = get_valid_numeric_input("Which " + type + " identifier would you like to edit: ")
 			if choice == '1':
 				continue
 			if choice in list(identifier_dictionary):
-				change = get_valid_numeric_input('Please enter the new field identifier: ')
-				current_config['iSense_info']['field_identifiers'][type][identifier_dictionary[choice]] = change
+				change = get_valid_numeric_input('What would you like the new field identifier to be?: ')
+				current_config['iSense_info']['field_identifiers'][type][identifier_dictionary[indx]] = change
 		if selection == '5':
 			print('-------------------------------------------------------------------')
 			identifier_dictionary = {'1':'Cancel'}
@@ -87,7 +80,7 @@ def edit_field_identifiers(current_config):
 	if 'field_identifiers' not in current_config['iSense_info']:
 		current_config['iSense_info']['field_identifiers'] = {}
 	option_dictionary = {'1':'Cancel', '2' : 'Save and return to previous menu', '3': 'Edit timestamp identifier', '4' : 'Edit reading identifier',
-	'5': 'Edit node level identifiers', '6': 'Edit sensor level identifiers'}
+	'5': 'Edit node level identifiers', '6': 'Edit sesor level identifiers'}
 	print("What do you want to do?")
 	print('-------------------------------------------------------------------')
 	while True:
@@ -147,5 +140,3 @@ def edit_iSense_config(current_config):
 			edit_field_identifiers(current_config)
 test = {}
 edit_iSense_config(test)
-with open('test.json', 'w') as f:
-	json.dump(test, f, indent=2)
