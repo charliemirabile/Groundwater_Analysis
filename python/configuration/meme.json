@@ -1,1 +1,9 @@
-{}
+{
+  "iSense_info": {
+    "dataset_id": "45",
+    "field_identifiers": {
+      "timestamp_identifier": "453",
+      "reading_identifier": "23"
+    }
+  }
+}
