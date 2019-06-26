@@ -45,11 +45,35 @@ def get_confirmation(message):
     return 'y' == input('(Y/n): ')[0].lower()
 
 def get_regex_input(regex, prompt_string, error_string):
-	response = input (prompt_string)
-	while not re.match(regex, response)
-		print(error_string)
-		response = input(prompt_string)
-	return response
+    response = input(prompt_string)
+    while not re.match(regex, response):
+        print(error_string)
+        response = input(prompt_string)
+    return response
+
+def generic_add(sub_dictionary, type):
+    key = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
+                'Please enter a new' + type + 'key: ',
+                'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
+    value = get_regex_input(r'^([0-9])+$',
+                'Please enter the value for' + type + ': ',
+                'Invalid input, please enter only numeric characters')
+    sub_dictionary[key] = value
+    return sub_dictionary
+
+def generic_delete(sub_dictionary, name):
+    if(get_confirm("Are you sure you want to delete " + name + "?")):
+        del sub_dictionary[name]
+        print('Successfully deleted ' + name)
+        return
+    print('Deletion canceled')
+    return
+
+def generic_edit(sub_dictionary, name):
+    value = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
+                'Please enter the new value for ' + name + ': ',
+                'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
+    sub_dictionary[name] = value
 
 def editing_menu_with_backup(subdictionary,prompt_string,options_list):
     backup = json.loads(json.dumps(subdictionary))
@@ -90,7 +114,7 @@ def basic_selection_menu(prompt_string,options_list):
         for index,value in enumerate(options_list):
             print('{0}. {1}'.format(index+2,value[0]))
         choice = input('Enter the number corresponding to your selection: ')
-        if choice == '1': return
+        if choice == '1': return 'cancel'
         if choice in valid_choices:
             print('-------------------------------------------------------------------')
             return options_list[int(choice)-2][1]
@@ -103,27 +127,65 @@ def basic_selection_menu(prompt_string,options_list):
 
 
 #def new_configuration():print('-------------------------------------------------------------------');print('new')
-def edit_configuration():print('-------------------------------------------------------------------');print('edit')
+#def edit_configuration():print('-------------------------------------------------------------------');print('edit')
 #def delete_configuration():print('-------------------------------------------------------------------');print('delete')
 #def set_active():print('-------------------------------------------------------------------');print('active')
 
+def setup_sub_dictionary_and_call(top_dict,name_of_sub, func):
+    if name_of_sub not in top_dict:
+        top_dict[name_of_sub]={}
+    return func(top_dict[name_of_sub])
+
+def edit_iSense_info(subdict):
+    print('oof')
+    print(subdict)
+    
+def edit_node_info(subdict):
+    print('foof')
+    print(subdict)
+    
+def edit_configuration():
+    choice = pick_config_or_cancel('Which configuration do you want to edit?')
+    if choice == 'cancel':print('-------------------------------------------------------------------');return
+    file = open(PATH_TO_CONFIG_FOLDER + choice,'r')
+    current_config = json.load(file)
+    file.close()
+    current_config = editing_menu_with_backup(current_config,
+                                         'What do you want to edit?',
+                                         [('Edit iSENSE info',lambda x: setup_sub_dictionary_and_call(x,'iSense_info',edit_iSense_info)),
+                                          ('Edit node info', lambda x: setup_sub_dictionary_and_call(x,'nodes',edit_node_info))])
+    file = open(PATH_TO_CONFIG_FOLDER + choice,'w')
+    json.dump(current_config,file,indent=2)
+    file.close()
+
 def new_configuration():
-    print('-------------------------------------------------------------------')
     choice = basic_selection_menu('What would you like to do?',
                                   [('Create new empty configuration','empty'),
                                    ('Create copy of existing configuration','copy')])
-    if choice == 'empty':
-        name = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
-                               'What should the configuration be named',
+    if choice == 'cancel':print('-------------------------------------------------------------------');return
+    
+    name = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
+                               'What should the configuration be named: ',
                                'Error, name may only contain letters numbers underscores or parentheses')
+    if choice == 'empty':
         f = open(PATH_TO_CONFIG_FOLDER + name + '.json','w')
         f.write('{}')
         f.close()
         print('-------------------------------------------------------------------')
-        print('Successfully added new configuration' + name)
+        print('Successfully added new configuration ' + name)
         return
     if choice == 'copy':
-        
+        selection = pick_config_or_cancel('Which config do you want to copy?')
+        if selection == 'cancel':
+            return
+        original = open(PATH_TO_CONFIG_FOLDER + selection,'r')
+        copy = open(PATH_TO_CONFIG_FOLDER + name + '.json','w')
+        json.dump(json.load(original),copy, indent=2)
+        original.close()
+        copy.close()
+        print('-------------------------------------------------------------------')
+        print('Successfully added new configuration ' + name)
+        return
         
 
 def delete_configuration():
@@ -170,6 +232,7 @@ def main_menu():
             print('{0}. {1}'.format(index, option_dictionary[index]))
         selection = input('Please enter the appropriate number to indicate your choice: ')
         if selection == '1':
+            print('-------------------------------------------------------------------')
             return
         if selection == '2':
             new_configuration()
