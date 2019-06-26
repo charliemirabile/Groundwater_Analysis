@@ -32,7 +32,7 @@ def pick_subdict_or_cancel(subdict, prompt_string):
         for index,name in enumerate(list_of_keys):
             print("{0}. {1}".format(index+2,name))
         choice = input('Enter the number corresponding to your selection: ')
-        if choice == '1': return 'Cancel'
+        if choice == '1': return 'cancel'
         if choice in valid_choices: return list_of_keys[int(choice)-2]
         print('-------------------------------------------------------------------')
         print("Error, invalid input.")
@@ -67,7 +67,6 @@ def generic_delete(sub_dictionary, name):
         print('Successfully deleted ' + name)
         return
     print('Deletion canceled')
-    return
 
 def generic_edit(sub_dictionary, name):
     value = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
@@ -139,10 +138,30 @@ def setup_sub_dictionary_and_call(top_dict,name_of_sub, func):
 def edit_iSense_info(subdict):
     print('oof')
     print(subdict)
+
+def delete_node(subdict):
+    choice = pick_subdict_or_cancel(subdict, 'Which node do you want to delete?')
+    if not choice == 'cancel':generic_delete(subdict, choice)
+    return subdict
+
+def add_node(subdict):
+    id = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
+                'Please enter the id of the new node',
+                'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
+    subdict[id]={}
+    return subdict
+
+def edit_node(subdict)
+    choice = pick_subdict_or_cancel(subdict, 'Which node do you want to edit?')
+    if choice=='cancel':return subdict
     
+
 def edit_node_info(subdict):
-    print('foof')
-    print(subdict)
+    subdict = editing_menu_with_backup(subdict,
+                                       'What do you want to do?',
+                                       [('Add new node',),
+                                        ('Edit existing node',),
+                                        ('Delete existing node',)])
     
 def edit_configuration():
     choice = pick_config_or_cancel('Which configuration do you want to edit?')
@@ -249,4 +268,4 @@ def main_menu():
         print('-------------------------------------------------------------------')
         print('Invalid choice')
 
-main_menu()
+if __name__=='__main__':main_menu()
