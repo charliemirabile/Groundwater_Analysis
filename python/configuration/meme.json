@@ -8,7 +8,8 @@
         "help": "7888"
       },
       "sensor_level": {
-        "hi": "45"
+        "hi": "45",
+        "test": "56"
       }
     },
     "contribution_key": "34"

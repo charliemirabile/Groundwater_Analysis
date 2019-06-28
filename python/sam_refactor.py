@@ -134,21 +134,14 @@ def basic_selection_menu(prompt_string,options_list):
 		print('-------------------------------------------------------------------')
 		print('Error, invalid input')
 
-
-
-
-
-
-#def new_configuration():print('-------------------------------------------------------------------');print('new')
-#def edit_configuration():print('-------------------------------------------------------------------');print('edit')
-#def delete_configuration():print('-------------------------------------------------------------------');print('delete')
-#def set_active():print('-------------------------------------------------------------------');print('active')
-
 def setup_sub_dictionary_and_call(top_dict,name_of_sub, func):
 	if name_of_sub not in top_dict:
 		top_dict[name_of_sub]={}
 	return func(top_dict[name_of_sub])
 
+#MENUS \/
+
+#Generic menu for adding, editing, and deleting key value pairs
 def add_edit_delete_generic(subdict):
 	print(subdict)
 	subdict = editing_menu_with_backup(subdict,
@@ -156,7 +149,7 @@ def add_edit_delete_generic(subdict):
 							[('Add a new identifier', lambda x: generic_add(x)),
 							('Edit an existing identifier', lambda x: generic_choice_edit(x)),
 							('Delete an existing identifier', lambda x: generic_choice_delete(x))])
-
+#Menu for editing iSense field identifiers
 def edit_field_identifiers(subdict):
 	subdict = editing_menu_with_backup(subdict,
 							'What do you want to edit',
@@ -164,7 +157,7 @@ def edit_field_identifiers(subdict):
 							 ('Edit reading identifier', lambda x: generic_edit(x , 'reading_identifier')),
 							('Edit node level identifiers', lambda x: setup_sub_dictionary_and_call(x, 'node_level', add_edit_delete_generic)),
 							('Edit sensor level identifiers',lambda x: setup_sub_dictionary_and_call(x, 'sensor_level', add_edit_delete_generic))])
-
+#Highest level menu for iSense
 def edit_iSense_info(subdict):
 	subdict = editing_menu_with_backup(subdict,
 							'What do you want to edit?',
