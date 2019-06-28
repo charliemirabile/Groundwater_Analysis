@@ -1,3 +1,4 @@
+
 import json,os,re
 PATH_TO_CONFIG_FOLDER = 'configuration/'
 FILENAME_FOR_ACTIVE_CONFIG = 'active_configuration.txt'
@@ -51,18 +52,18 @@ def get_regex_input(regex, prompt_string, error_string):
 		response = input(prompt_string)
 	return response
 
-def generic_add(sub_dictionary, type):
+def generic_add(sub_dictionary):
 	key = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
-				'Please enter a new' + type + 'key: ',
+				'Please enter a new key: ',
 				'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
 	value = get_regex_input(r'^([0-9])+$',
-				'Please enter the value for' + type + ': ',
+				'Please enter the value: ',
 				'Invalid input, please enter only numeric characters')
 	sub_dictionary[key] = value
 	return sub_dictionary
 
 def generic_delete(sub_dictionary, name):
-	if(get_confirm("Are you sure you want to delete " + name + "?")):
+	if(get_confirmation("Are you sure you want to delete " + name + "?")):
 		del sub_dictionary[name]
 		print('Successfully deleted ' + name)
 		return
@@ -74,6 +75,18 @@ def generic_edit(sub_dictionary, name):
 				'Please enter the new value for ' + name + ': ',
 				'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
 	sub_dictionary[name] = value
+
+#Same as generic_edit, except they get a choice from a sub_dictionary
+def generic_choice_edit(sub_dictionary):
+	choice = pick_subdict_or_cancel(sub_dictionary, 'Please choose what you would like to edit: ')
+	if choice == 'Cancel': return
+	generic_edit(sub_dictionary, choice)
+
+#Same as generic_delete, except they get a choice from a sub_dictionary
+def generic_choice_delete(sub_dictionary):
+	choice = pick_subdict_or_cancel(sub_dictionary, 'Please choose what you like to delete: ')
+	if choice == 'Cancel': return
+	generic_delete(sub_dictionary, choice)
 
 def editing_menu_with_backup(subdictionary,prompt_string,options_list):
 	backup = json.loads(json.dumps(subdictionary))
@@ -136,22 +149,29 @@ def setup_sub_dictionary_and_call(top_dict,name_of_sub, func):
 		top_dict[name_of_sub]={}
 	return func(top_dict[name_of_sub])
 
-def add_edit_delete_generic
+def add_edit_delete_generic(subdict):
+	print(subdict)
+	subdict = editing_menu_with_backup(subdict,
+							'What do you want to do?',
+							[('Add a new identifier', lambda x: generic_add(x)),
+							('Edit an existing identifier', lambda x: generic_choice_edit(x)),
+							('Delete an existing identifier', lambda x: generic_choice_delete(x))])
 
 def edit_field_identifiers(subdict):
 	subdict = editing_menu_with_backup(subdict,
 							'What do you want to edit',
 							[('Edit timestamp identifier', lambda x: generic_edit(x, 'timestamp_identifier')),
-							 ('Edit reading identifier', lambda x: generic_edit(x , 'reading_identifier'))])
+							 ('Edit reading identifier', lambda x: generic_edit(x , 'reading_identifier')),
+							('Edit node level identifiers', lambda x: setup_sub_dictionary_and_call(x, 'node_level', add_edit_delete_generic)),
+							('Edit sensor level identifiers',lambda x: setup_sub_dictionary_and_call(x, 'sensor_level', add_edit_delete_generic))])
 
 def edit_iSense_info(subdict):
-	subdict = editing_menu_with_backup(subdict, 
+	subdict = editing_menu_with_backup(subdict,
 							'What do you want to edit?',
 							[('Edit dataset id', lambda x: generic_edit(x, 'dataset_id')),
 							 ('Edit contribution key', lambda x: generic_edit(x, 'contribution_key')),
 							 ('Edit field identifiers', lambda x: setup_sub_dictionary_and_call(x, 'field_identifiers', edit_field_identifiers))])
-	print(subdict)
-	
+
 def edit_node_info(subdict):
 	print('foof')
 	print(subdict)

@@ -1,9 +1,17 @@
 {
   "iSense_info": {
-    "dataset_id": "45",
+    "dataset_id": "456",
     "field_identifiers": {
-      "timestamp_identifier": "453",
-      "reading_identifier": "23"
-    }
-  }
+      "timestamp_identifier": "234",
+      "reading_identifier": "23443",
+      "node_level": {
+        "help": "7888"
+      },
+      "sensor_level": {
+        "hi": "45"
+      }
+    },
+    "contribution_key": "34"
+  },
+  "nodes": {}
 }
