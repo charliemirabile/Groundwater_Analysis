@@ -62,7 +62,7 @@ def generic_add(sub_dictionary, type):
     return sub_dictionary
 
 def generic_delete(sub_dictionary, name):
-    if(get_confirm("Are you sure you want to delete " + name + "?")):
+    if(get_confirmation("Are you sure you want to delete " + name + "?")):
         del sub_dictionary[name]
         print('Successfully deleted ' + name)
         return
@@ -139,29 +139,33 @@ def edit_iSense_info(subdict):
     print('oof')
     print(subdict)
 
-def delete_node(subdict):
+def chose_delete_node(subdict):
     choice = pick_subdict_or_cancel(subdict, 'Which node do you want to delete?')
     if not choice == 'cancel':generic_delete(subdict, choice)
     return subdict
 
-def add_node(subdict):
+def chose_add_node(subdict,root):
     id = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
-                'Please enter the id of the new node',
+                'Please enter the id of the new node: ',
                 'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
     subdict[id]={}
     return subdict
 
-def edit_node(subdict)
+def chose_edit_node(subdict):
     choice = pick_subdict_or_cancel(subdict, 'Which node do you want to edit?')
     if choice=='cancel':return subdict
-    
+    subdict[choice] = edit_node(subdict[choice])
+
+def edit_node(nodedict):
+    print('editnode')
+    return nodedict
 
 def edit_node_info(subdict):
     subdict = editing_menu_with_backup(subdict,
                                        'What do you want to do?',
-                                       [('Add new node',),
-                                        ('Edit existing node',),
-                                        ('Delete existing node',)])
+                                       [('Add new node',chose_add_node),
+                                        ('Edit existing node',chose_edit_node),
+                                        ('Delete existing node',chose_delete_node)])
     
 def edit_configuration():
     choice = pick_config_or_cancel('Which configuration do you want to edit?')
