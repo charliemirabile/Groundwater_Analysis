@@ -1,7 +1,9 @@
 
 import json, os
 
-def check_json (json_object):
+#PRE: json_object is a valid json file
+#POST: true or false is returned based on the validity of the configuration (if ANYTHING is wrong, the function will return false)
+def check_config (json_object):
 	result = True
 	node_level_identifiers = []
 	sensor_level_identifiers = []
@@ -32,7 +34,6 @@ def check_json (json_object):
 	else:
 		print('Invalid configuration - no iSense info')
 		result = False
-
 #node portion check
 	if 'nodes' in json_object:
 		for node in json_object['nodes']:
