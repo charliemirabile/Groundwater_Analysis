@@ -60,8 +60,8 @@ void loop() {
   }
   
   //Go to sleep
-  int counter = 1;
-  while(counter--)
+//  int counter = 1;
+//  while(counter--)
     Watchdog.sleep();
-  //delay(2000);
+//  delay(2000);
 }
