@@ -144,11 +144,12 @@ def chose_delete_node(subdict):
     if not choice == 'cancel':generic_delete(subdict, choice)
     return subdict
 
-def chose_add_node(subdict,root):
+def chose_add_node(subdict):
     id = get_regex_input(r'^([a-zA-Z0-9_\-\(\)])+$',
                 'Please enter the id of the new node: ',
                 'Invalid input, please enter only alphanumeric characters underscores dashes or parenthesis')
     subdict[id]={}
+    #print('Successfully added new node: ' + id)
     return subdict
 
 def chose_edit_node(subdict):
@@ -156,8 +157,16 @@ def chose_edit_node(subdict):
     if choice=='cancel':return subdict
     subdict[choice] = edit_node(subdict[choice])
 
+def edit_node_constants():
+    return
+def edit_node_sensors():
+    return
+    
 def edit_node(nodedict):
-    print('editnode')
+    nodedict = editing_menu_with_backup(nodedict,
+                                        'What do you want to do?',
+                                        [('Edit constant values for this node',edit_node_constants),
+                                         ('Edit sensors on this node',edit_node_sensors)])
     return nodedict
 
 def edit_node_info(subdict):
@@ -166,6 +175,7 @@ def edit_node_info(subdict):
                                        [('Add new node',chose_add_node),
                                         ('Edit existing node',chose_edit_node),
                                         ('Delete existing node',chose_delete_node)])
+    return subdict
     
 def edit_configuration():
     choice = pick_config_or_cancel('Which configuration do you want to edit?')

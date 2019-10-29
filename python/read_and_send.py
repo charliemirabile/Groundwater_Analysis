@@ -112,34 +112,41 @@ node_ids_to_position_information = {
 
 iSense_field_idenfifiers = {#MUST ADD
 
-	'timestamp' : '18399',
-	'metric' : '18402',
-	'latitude' : '18397',
-	'longitude' : '18398',
-	'depth' : '18401',
-	'reading' : '18400'
+	'timestamp' : '17090',
+	'metric' : '17093',
+	'latitude' : '17094',
+	'longitude' : '17095',
+	'depth' : '17092',
+	'reading' : '17091'
 }
 
 
 
 
-iSense_contribution_key = 'test'
+iSense_contribution_key = 'oof'
 
-iSense_dataset_id = 101609
+iSense_dataset_id = 71226
 
 def get_formatted_timestamp():
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
 def iSense_append_data(contribution_key,dataset_ID,data):
-    payload = {
+    payload1 = {
         'contribution_key':contribution_key,
         'id':dataset_ID,
 	'data':data
     }
+    payload2 = {
+       'contribution_key':'oof',
+       'id':71219,
+       'data':data
+    }
     headers = {'content-type':'application/json'}
-    request = requests.post('https://isenseproject.org/api/v1/data_sets/append',data=json.dumps(payload),headers=headers)
+    request1 = requests.post('https://dev.isenseproject.org/api/v1/data_sets/append',data=json.dumps(payload1),headers=headers, verify=False)
+    #request2 = requests.post('https://rsense-env.j344zpn2wr.us-east-1.elasticbeanstalk.com/api/v1/data_sets/append',data=json.dumps(payload2),headers=headers, verify=False)
     #print(request)
-    #print(request.text)
+    print(request1.text)
+#    print(request2.text)
 #	request.text
 
 if len(sys.argv) > 1:
@@ -186,11 +193,11 @@ while True:
         except KeyError:
             print('unexpected sensor identifier encountered - no corresponding feild in iSense')
             raise
-##        try:
-##            iSense_append_data(iSense_contribution_key,iSense_dataset_id,data)
-##        except requests.exceptions.RequestException as e:
-##            print('error making request to iSense - no internet or issues with iSense')
-##            raise
+        try:
+            iSense_append_data(iSense_contribution_key,iSense_dataset_id,data)
+        except requests.exceptions.RequestException as e:
+            print('error making request to iSense - no internet or issues with iSense')
+            raise
     except KeyboardInterrupt as e:
         raise
     except:

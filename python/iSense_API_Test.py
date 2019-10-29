@@ -31,8 +31,8 @@ def createData():
 
 def createEmptyDataset():
     payload = {
-        'title': 'testing dataset',
-        'contribution_key': 'meme',
+        'title': 'second_test',
+        'contribution_key': 'test2',
         'contributor_name': 'Raspberry Pi',
         'data':{
             '18399': [getFormattedTimestamp()],
