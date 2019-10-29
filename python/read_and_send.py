@@ -83,14 +83,10 @@ feather_ids_to_address_dictionaries_for_descriptions = {
 	'1337':
 	{
 		'7':'battery',
-		'67':'conductivity',
-		'68':'ORP',
-                '69':'temperature'
-	},
-	'1338':
-	{
-		'7':'battery',
-		'101':'test'
+		'20':'temperature',
+		'21':'conductivity',
+                '30':'temperature',
+                '31':'conductivity'
 	}
 }
 
@@ -100,12 +96,6 @@ node_ids_to_position_information = {
 		'depth':'5',
 		'lat':'5',
 		'long':'5'
-	},
-	'1338':
-	{
-		'depth':'7',
-		'lat':'8',
-		'long':'3'
 	}
 }
 
