@@ -71,8 +71,15 @@ void loop() {
   //}
   
   //Go to sleep
+<<<<<<< HEAD
   //int counter = 1;
   //while(counter--)
     //Watchdog.sleep();
     //delay(10000);
+=======
+//  int counter = 1;
+//  while(counter--)
+    Watchdog.sleep();
+//  delay(2000);
+>>>>>>> 8ae79644f30d3f875b1afacb5daeab87974c2da3
 }
