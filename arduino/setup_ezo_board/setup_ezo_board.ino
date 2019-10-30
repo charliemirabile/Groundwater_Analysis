@@ -9,7 +9,7 @@
 
 Connect EZO Vcc to 3.3v on board
 Connect EZO GND,TX,RX to pins from avove
-Connect rightmost lower pin of EZO board to one side of normally open pushbotton
+Connect PBR lower pin of EZO board to one side of normally open pushbotton
 Connect other side of button to TX on EZO
 
 */

@@ -33,7 +33,18 @@ void setup() {
 }
 
 void loop() {
-  
+  get_sensor_reading(20, ezo_reading_buffer);
+  send_radio_message(ezo_reading_buffer);
+  get_temperature_calibrated_sensor_reading(21, _ezo_response, SIZE_EZO_RESPONSE, ezo_reading_buffer);
+  send_radio_message(ezo_reading_buffer);
+  get_sensor_reading(30, ezo_reading_buffer);
+  send_radio_message(ezo_reading_buffer);
+  get_temperature_calibrated_sensor_reading(31, _ezo_response, SIZE_EZO_RESPONSE, ezo_reading_buffer);
+  send_radio_message(ezo_reading_buffer);
+  format_battery_reading(analog_reading_buffer);
+  send_radio_message(analog_reading_buffer);
+  long milis_left = 9000;
+  while(milis_left>0)milis_left-=Watchdog.sleep();
   //testing code to make output more readable on RSPI
   //  send_radio_message("\n\n\n\n");
 
@@ -43,25 +54,25 @@ void loop() {
   //Check battery; send message if low
   //if(battery_low()){
   //Sending battery
-    format_battery_reading(analog_reading_buffer);
-    send_radio_message(analog_reading_buffer);
+    //format_battery_reading(analog_reading_buffer);
+    //send_radio_message(analog_reading_buffer);
   //}
   
   //Scan all valid i2c addresses and transmit readings or error stuff?
 
   //Needs work - doesnt callibrate readings in any way (For first test no calibration, we will worry about this later)
-  for(int i=0; i<MAX_DEVICES;i++)
-  {
-    if(address_array[i]!=0)
-    {
-        get_sensor_reading(address_array[i],ezo_reading_buffer);
-        send_radio_message(ezo_reading_buffer);
-    }
-  }
+  //for(int i=0; i<MAX_DEVICES;i++)
+  //{
+    //if(address_array[i]!=0)
+    //{
+        //get_sensor_reading(address_array[i],ezo_reading_buffer);
+        //send_radio_message(ezo_reading_buffer);
+    //}
+  //}
   
   //Go to sleep
-  int counter = 1;
-  while(counter--)
-    Watchdog.sleep();
-  //delay(2000);
+  //int counter = 1;
+  //while(counter--)
+    //Watchdog.sleep();
+    //delay(10000);
 }
