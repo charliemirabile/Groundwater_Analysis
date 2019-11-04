@@ -1,19 +1,5 @@
 import serial,requests,json,time,datetime,sys
-
-dataset_base_name = 'BoatHouseTest'
-contribution_key = 'python'
-contributor_name = 'Raspberry Pi'
-project_ID = '3744'
-dataset_ID = '103753'
-
-latitude_ID = '18770'
-longitude_ID = '18771'
-timestamp_ID = '18772'
-reading_ID = '18773'
-depth_ID = '18774'
-type_ID = '18775'
-
-
+print('oof1')
 def append(data):
     payload = {
         'contribution_key':contribution_key,
@@ -22,9 +8,10 @@ def append(data):
     }
     headers = {'content-type':'application/json'}
     request = requests.post('https://isenseproject.org/api/v1/data_sets/append',data=json.dumps(payload),headers=headers)
-    print(request)
-    print(request.url)
-    print(request.text)
+    json.loads(request.text)
+    #print(request)
+    #print(request.url)
+    #print(request.text)
 
 def current_timestamp():
     currentTime = time.time()
@@ -34,10 +21,10 @@ def current_timestamp():
 
 def init_new_dataset():
     payload = {
-        'title': dataset_base_name+datetime.datetime.fromtimestamp(time.time()).strftime('_%Y_%m_%d'),
+        'title': dataset_base_name+datetime.datetime.fromtimestamp(time.time()).strftime('_%Y_%m_%d_%H_%M_%S'),
         'contribution_key': contribution_key,
         'contributor_name': contributor_name,
-        'data':{
+        'data':{#garbage placeholder data since you cannot create an empty dataset >:(
             latitude_ID:['0'],
             longitude_ID:['0'],
             timestamp_ID:[current_timestamp()],
@@ -46,12 +33,19 @@ def init_new_dataset():
             type_ID:['NULL']
         }
     }
+    print(payload)
     headers = {'content-type':'application/json'}
-    request = requests.post('https://isenseproject.org/api/v1/projects/'+project_ID+'/jsonDataUpload',data=json.dumps(payload),headers=headers)
+    url = 'https://isenseproject.org/api/v1/projects/'+project_ID+'/jsonDataUpload'
+    print(url)
+    request = requests.post(url,data=json.dumps(payload),headers=headers)
     #print(request)
     #print(request.url)
-    print(request.text)
-    return request.json()['id']
+    #print(request.text)
+    request_json=json.loads(request.text)
+    print(request)
+    newid = request_json['id']
+    print('Switching to dataset with id: ',newid)
+    return newid
 
 
 
@@ -59,10 +53,10 @@ feather_ids_to_address_dictionaries_for_descriptions = {
 	'1337':
 	{
 		'7':'battery',
-		'20':'temperature',
-		'21':'conductivity',
-                '30':'temperature',
-                '31':'conductivity'
+		'20':'temperature1',
+		'21':'conductivity1',
+                '30':'temperature2',
+                '31':'conductivity2'
 	}
 }
 
@@ -75,11 +69,32 @@ node_ids_to_position_information = {
 	}
 }
 
+dataset_base_name = 'BoatHouseTest'
+contribution_key = 'python'
+contributor_name = 'Raspberry Pi'
+dataset_limit = 15
+project_ID = '3744'
 
+latitude_ID = '18770'
+longitude_ID = '18771'
+timestamp_ID = '18772'
+reading_ID = '18773'
+depth_ID = '18774'
+type_ID = '18775'
 
-iSense_contribution_key = 'test'
+if(len(sys.argv)<3):
+    print('You need to specify the dataset to use and what to start the datapoint counter at using command line arguments like this: python /path/to/script ID_OF_DATASET COUNTER_START')
+    exit()
 
-iSense_dataset_id = 101609
+try:
+    datapoint_counter = int(sys.argv[2])
+except:
+    print('invalid argument to start datapoint counter must be an integer')
+    exit()
+
+dataset_ID = sys.argv[1]
+
+print('oof2')
 
 def get_formatted_timestamp():
     return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -97,21 +112,17 @@ def iSense_append_data(contribution_key,dataset_ID,data):
 #	request.text
 
 
+print('oof3')
 
-
-
-
-DATA_LIMIT = 500
-counter = 0
-
-
-
-if len(sys.argv) > 1:
-    base_station_feather_identifier = sys.argv[1]
+if len(sys.argv) > 3:
+    base_station_feather_identifier = sys.argv[3]
 else:
     base_station_feather_identifier = '/dev/ttyACM0'
 
 print('Will attempt to communicate with feather at: ' + base_station_feather_identifier)
+
+
+
 
 try:
     base_station_feather = serial.Serial(base_station_feather_identifier,9600)
@@ -125,11 +136,11 @@ except:
 
 while True:
     try:
-        if(counter>=DATA_LIMIT):
-            iSense_dataset_id=init_new_dataset()
-            counter=0
-        input = base_station_feather.readline().decode('UTF-8')
-        print(input)
+        if(datapoint_counter>=dataset_limit):
+            dataset_ID=init_new_dataset()
+            datapoint_counter=0
+        input = base_station_feather.readline()#.decode('UTF-8')
+        print('The input I got was:', input)
         try:
             feather_identifier, sensor_identifier, reading = input.split(':')
             #feather_indentifer = str(feather_identifier)
@@ -139,9 +150,9 @@ while True:
             print('malformed message - wrong number of delimeters')
             raise
         try:
-            print(feather_identifier)
-            print(sensor_identifier)
-            print(reading)
+            print('feather identifier was: ',feather_identifier)
+            print('sensor identifier was: ', sensor_identifier)
+            print('reading was: ', reading)
             data = {
                 timestamp_ID:[get_formatted_timestamp()],
                 latitude_ID:[node_ids_to_position_information[feather_identifier]['lat']],
@@ -154,14 +165,17 @@ while True:
             print('unexpected sensor identifier encountered - no corresponding feild in iSense')
             raise
         try:
-            iSense_append_data(iSense_contribution_key,iSense_dataset_id,data)
-            counter=counter+1
+            iSense_append_data(contribution_key, dataset_ID, data)
+            datapoint_counter=datapoint_counter+1
         except requests.exceptions.RequestException as e:
             print('error making request to iSense - no internet or issues with iSense')
             raise
     except KeyboardInterrupt as e:
         raise
+    except ValueError as e:
+	pass
     except:
         e = sys.exc_info()[0]
         print(e)
+        raise
 
