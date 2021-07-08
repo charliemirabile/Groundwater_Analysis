@@ -1,0 +1,10 @@
+[Unit]
+ Description=rPi Datalogger
+ After=graphical.target 
+
+ [Service]
+ Type=idle
+ ExecStart=/usr/bin/python3 /home/pi/Desktop/rpi_production.py >> /home/pi/Desktop/datalogger.log 2>&1
+
+ [Install]
+ WantedBy=graphical.target
