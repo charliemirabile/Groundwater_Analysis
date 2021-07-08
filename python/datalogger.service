@@ -4,7 +4,7 @@
 
  [Service]
  Type=idle
- ExecStart=/usr/bin/python3 /home/pi/Desktop/rpi_production.py >> /home/pi/Desktop/datalogger.log 2>&1
+ ExecStart=/usr/bin/python3 /home/pi/Desktop/rpi_production.py
 
  [Install]
  WantedBy=graphical.target
